@@ -6,20 +6,16 @@ goodstr = "module.exports = require('./core.asar');"
 
 badstrs = ["4n4rchy", "inject", "hook", "modDir"]
 
-def get_latest_version(dirs):
-	latest = ""
+def get_all_versions(dirs):
+	versions = []
 	for dir in dirs:
 		if dir.startswith("0"):
-			if dir>latest:
-				latest = dir
-	return latest
+			versions.append(dir)
+	return versions
 			
 
-def check_discord(path, name):
-	dirs = os.listdir(path)
-	latest = get_latest_version(dirs)
-	print("Version is "+latest)
-	with open(path+"/"+latest+"/modules/discord_desktop_core/index.js") as f:
+def check_version(path, name):
+	with open(path+"/modules/discord_desktop_core/index.js") as f:
 		content = f.read()
 		badcount = 0	
 		for badstr in badstrs:
@@ -31,6 +27,15 @@ def check_discord(path, name):
 			print("SUCCESS: Discord "+name+" is OK, no traces of AnarchyGrabber found!")
 		else:
 			print("WARNING: Discord "+name+" index.js content unknown. If you do not have a modified client, this may be an AnarchyGrabber infection!")
+
+
+def check_discord(path, name):
+	dirs = os.listdir(path)
+	versions = get_all_versions(dirs)
+	for version in versions:
+		print("Version is "+version)
+		check_version(path+"/"+version, name)
+	
 		
 
 osname = platform.system()
